@@ -123,7 +123,7 @@
         }
 
         /* =========================================
-           DESKTOP ADJUSTMENTS (Changed to 1200px)
+           DESKTOP ADJUSTMENTS (1200px and above)
            ========================================= */
         @media (min-width: 1200px) {
             body { justify-content: center; }
@@ -205,6 +205,80 @@
             font-size: 0.75rem; color: var(--text-gray); text-align: center;
             line-height: 1.6; margin-bottom: 20px; font-weight: 400;
         }
+
+        /* =========================================
+           NEW: Latest Video Section Styles
+           ========================================= */
+        .latest-video-section {
+            margin-bottom: 25px;
+            background: #fdfbf7;
+            border: 1px solid #f0e6d2;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .latest-video-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .latest-video-title i { color: #FF0000; font-size: 1.1rem; }
+
+        /* The container for the iframe to maintain 16:9 aspect ratio */
+        .video-iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            cursor: pointer;
+        }
+
+        .video-iframe-container iframe,
+        .video-iframe-container .video-placeholder {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* Placeholder image and play button */
+        .video-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        .video-placeholder:hover { transform: scale(1.02); }
+
+        .play-btn-overlay {
+            width: 50px; height: 50px;
+            background: rgba(200, 163, 92, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            padding-left: 4px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: background 0.3s ease;
+        }
+
+        .video-placeholder:hover .play-btn-overlay { background: #FF0000; }
+
+        /* ========================================= */
 
         .channel-info { text-align: center; margin-bottom: 25px; }
         .channel-info small { font-size: 0.7rem; letter-spacing: 1px; color: var(--text-gray); font-weight: 600; display: block; margin-bottom: 8px; }
@@ -330,6 +404,25 @@
                         Welcome to our channel! We are on a mission to explore the authentic, mouth-watering dishes and the best restaurants hidden across God's Own Country. From street food to fine dining, we bring you honest reviews and beautiful travel stories. Join us and satisfy your wanderlust and cravings!
                     </p>
 
+                    <!-- Latest Video Highlight Section -->
+                    <div class="latest-video-section">
+                        <div class="latest-video-title">
+                            <i class="fab fa-youtube"></i> Watch Our Latest Video
+                        </div>
+                        
+                        <div class="video-iframe-container" id="video-player-container">
+                            <!-- Placeholder with actual YouTube thumbnail -->
+                            <div class="video-placeholder" 
+                                 style="background-image: url('https://img.youtube.com/vi/VEEjpUFxISY/hqdefault.jpg');"
+                                 onclick="loadYouTubeVideo()">
+                                <div class="play-btn-overlay">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END New Section -->
+
                     <div class="channel-info">
                         <small>CHANNEL ID</small>
                         <div class="channel-id-box">
@@ -379,6 +472,27 @@
     </div>
 
     <script>
+        // Function to load YouTube video when user clicks the placeholder
+        function loadYouTubeVideo() {
+            // Actual Video ID added here
+            const videoId = "VEEjpUFxISY"; 
+            const container = document.getElementById('video-player-container');
+            
+            // Creating iframe element
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            iframe.title = "YouTube video player";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            iframe.allowFullscreen = true;
+
+            // Clear placeholder and add iframe
+            container.innerHTML = '';
+            container.appendChild(iframe);
+            
+            // Pause background video when latest video is played
+            document.getElementById('bg-video').pause();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const welcomeScreen = document.getElementById('welcome-screen');
             const continueBtn = document.getElementById('continue-btn');
@@ -406,7 +520,7 @@
                     isVideoPlaying = true;
                 });
 
-                // Auto Scroll (Mobile/Tablet only - Changed to 1200)
+                // Auto Scroll (Mobile/Tablet only)
                 if (window.innerWidth <= 1200) {
                     setTimeout(() => {
                         mainCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -417,9 +531,7 @@
                 }
             });
 
-            // ====================================================
-            // SCROLL VOLUME CONTROL (MOBILE/TABLET ONLY - Changed to 1200)
-            // ====================================================
+            // Scroll Volume Control
             window.addEventListener('scroll', () => {
                 if (window.innerWidth <= 1200) {
                     
