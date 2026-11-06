@@ -122,7 +122,6 @@
             overflow: hidden; position: relative;
         }
 
-        /* DESKTOP ADJUSTMENTS */
         @media (min-width: 1200px) {
             body { justify-content: center; }
             .layout-wrapper { flex-direction: row; align-items: stretch; justify-content: center; max-width: 1050px; gap: 30px; }
@@ -204,7 +203,7 @@
         .video-iframe-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%; 
             height: 0;
             border-radius: 8px;
             overflow: hidden;
@@ -375,18 +374,18 @@
                         </div>
                         
                         <div class="video-iframe-container" id="video-player-container">
-                            <!-- Initial Placeholder (Will be updated dynamically) -->
-                            <!-- We use a standard loading gif or text here initially -->
+                            <!-- Using a div for the YouTube player API -->
+                            <div id="youtube-player"></div>
+                            
+                            <!-- Placeholder (Will be hidden on click) -->
                             <div class="video-placeholder" id="latest-thumbnail"
-                                 style="background-color: #eee;"
-                                 onclick="loadYouTubeVideo()">
+                                 onclick="playYouTubeVideo()">
                                 <div class="play-btn-overlay">
                                     <i class="fas fa-play"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- END New Section -->
 
                     <div class="channel-info">
                         <small>CHANNEL ID</small>
@@ -436,83 +435,104 @@
         </div>
     </div>
 
+    <!-- YouTube Iframe API Script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
-        // നിങ്ങളുടെ ചാനലിന്റെ Channel ID (ഇത് നിങ്ങളുടെ ലിങ്കിൽ നിന്ന് കിട്ടും. ലിങ്കിൽ @yummyfoods... എന്ന് കാണുന്നതാണ് Handle. 
-        // RSS ഫീഡിനായി നമുക്ക് Handle തന്നെ ഉപയോഗിക്കാം)
-        const channelHandle = "yummyfoodsfromkerala-oz2vj"; 
-        let latestVideoId = "VEEjpUFxISY"; // Fallback ID (ഫീഡ് വർക്ക് ചെയ്യാത്ത പക്ഷം ഇത് കാണിക്കും)
+        // =================================================================
+        // ⬇️ ഇവിടെ മാത്രം നിങ്ങളുടെ പുതിയ വീഡിയോയുടെ ലിങ്ക് കോപ്പി ചെയ്ത് പേസ്റ്റ് ചെയ്യുക ⬇️
+        // =================================================================
+        const youtubeLink = "https://youtu.be/VEEjpUFxISY"; 
+        // =================================================================
 
-        // 1. ഓട്ടോമാറ്റിക് ആയി പുതിയ വീഡിയോ കണ്ടെത്താനുള്ള ഫങ്ഷൻ
-        async function fetchLatestVideo() {
-            try {
-                // RSS Feed to JSON Converter API ഉപയോഗിക്കുന്നു
-                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?user=${channelHandle}`);
-                const data = await response.json();
+        let latestVideoId = "";
+        let ytPlayer; // YouTube Player object
+        let isYouTubePlaying = false;
 
-                // ഡാറ്റ ശരിയായി കിട്ടിയാൽ ആദ്യത്തെ വീഡിയോയുടെ ഐഡി എടുക്കുന്നു (ഏറ്റവും പുതിയത് ആദ്യം വരും)
-                if (data.status === 'ok' && data.items.length > 0) {
-                    const latestVideo = data.items[0];
-                    // ലിങ്കിൽ നിന്ന് വീഡിയോ ഐഡി മാത്രം എക്സ്ട്രാക്ട് ചെയ്യുന്നു
-                    const videoUrl = latestVideo.link;
-                    const urlParams = new URLSearchParams(new URL(videoUrl).search);
-                    latestVideoId = urlParams.get('v');
+        function extractVideoID(url) {
+            url = url.trim(); 
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
 
-                    // തംബ്നെയിൽ ഇമേജ് അപ്ഡേറ്റ് ചെയ്യുന്നു
-                    const thumbnailDiv = document.getElementById('latest-thumbnail');
-                    thumbnailDiv.style.backgroundImage = `url('https://img.youtube.com/vi/${latestVideoId}/hqdefault.jpg')`;
-                    thumbnailDiv.style.backgroundColor = 'transparent'; // Loading color മാറ്റുന്നു
-                }
-            } catch (error) {
-                console.log("Auto-detect failed, using fallback ID.", error);
+        function setThumbnail() {
+            latestVideoId = extractVideoID(youtubeLink);
+            if (latestVideoId) {
+                const thumbnailDiv = document.getElementById('latest-thumbnail');
+                thumbnailDiv.style.backgroundImage = `url('https://img.youtube.com/vi/${latestVideoId}/hqdefault.jpg')`;
             }
         }
 
-        // പേജ് ലോഡ് ആകുമ്പോൾ ഫങ്ഷൻ വിളിക്കുന്നു
-        document.addEventListener('DOMContentLoaded', fetchLatestVideo);
-
-
-        // 2. യൂട്യൂബ് വീഡിയോ ലോഡ് ചെയ്യാനുള്ള ഫങ്ഷൻ
-        function loadYouTubeVideo() {
-            const container = document.getElementById('video-player-container');
-            const iframe = document.createElement('iframe');
-            
-            iframe.src = `https://www.youtube.com/embed/${latestVideoId}?autoplay=1&rel=0`;
-            iframe.title = "YouTube video player";
-            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-            iframe.allowFullscreen = true;
-
-            container.innerHTML = '';
-            container.appendChild(iframe);
-            
-            // പിന്നിലെ ബാക്ക്ഗ്രൗണ്ട് വീഡിയോ പോസ് ചെയ്യുന്നു
-            document.getElementById('bg-video').pause();
+        // YouTube Player Initialize ചെയ്യാൻ (API വഴി)
+        function onYouTubeIframeAPIReady() {
+            // പ്ലേയർ തുടക്കത്തിൽ തന്നെ ഉണ്ടാക്കുന്നു, പക്ഷേ ഹൈഡ് ചെയ്തിരിക്കും
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: latestVideoId,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
 
-        // 3. മറ്റ് UI ഫങ്ഷനുകൾ (Scroll, Welcome Screen)
+        // യൂട്യൂബ് വീഡിയോയുടെ സ്റ്റേറ്റ് മാറുമ്പോൾ (Play/Pause/Buffer)
+        function onPlayerStateChange(event) {
+            const bgVideo = document.getElementById('bg-video');
+            
+            // PC-യിൽ മാത്രം (1200px-ൽ കൂടുതൽ) ഈ ലോജിക് പ്രവർത്തിക്കും
+            if (window.innerWidth > 1200) {
+                if (event.data == YT.PlayerState.PLAYING) {
+                    // യൂട്യൂബ് വീഡിയോ പ്ലേ ആകുമ്പോൾ Start.mp4 പോസ് ചെയ്യുന്നു
+                    bgVideo.pause();
+                    isYouTubePlaying = true;
+                } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
+                    // യൂട്യൂബ് വീഡിയോ പോസ് ആകുമ്പോൾ Start.mp4 റെസ്യൂം ചെയ്യുന്നു
+                    bgVideo.play().catch(e => console.log(e));
+                    isYouTubePlaying = false;
+                }
+            }
+        }
+
+        // യൂട്യൂബ് വീഡിയോ പ്ലേ ചെയ്യാൻ (തംബ്നെയിൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ)
+        function playYouTubeVideo() {
+            document.getElementById('latest-thumbnail').style.display = 'none';
+            ytPlayer.playVideo();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            setThumbnail();
+
             const welcomeScreen = document.getElementById('welcome-screen');
             const continueBtn = document.getElementById('continue-btn');
             const mainContent = document.getElementById('main-content');
-            const video = document.getElementById('bg-video');
+            const bgVideo = document.getElementById('bg-video'); 
             const mainCard = document.getElementById('main-card');
             const videoWrapper = document.getElementById('video-wrapper');
 
-            const MAX_VOLUME = 1.0; 
+            const MAX_SCROLL_DISTANCE = 500; 
             let isVideoPlaying = false;
 
+            // Continue ബട്ടൺ ക്ലിക്ക്
             continueBtn.addEventListener('click', () => {
                 welcomeScreen.classList.add('hidden');
                 mainContent.classList.add('show');
                 
-                video.muted = false; 
-                video.volume = MAX_VOLUME;
+                bgVideo.muted = false; 
+                bgVideo.volume = 1.0; 
                 
-                video.play().then(() => {
+                bgVideo.play().then(() => {
                     isVideoPlaying = true;
                 }).catch(error => {
                     console.log("Autoplay blocked. Playing muted.", error);
-                    video.muted = true;
-                    video.play();
+                    bgVideo.muted = true;
+                    bgVideo.play();
                     isVideoPlaying = true;
                 });
 
@@ -526,19 +546,20 @@
                 }
             });
 
+            // Mobile-ൽ മാത്രം സ്ക്രോൾ വോളിയം ലോജിക്
             window.addEventListener('scroll', () => {
                 if (window.innerWidth <= 1200) {
-                    if (!isVideoPlaying || video.muted) return; 
+                    if (bgVideo.paused) {
+                        bgVideo.play().catch(e => {});
+                    }
 
                     let scrollY = window.scrollY || document.documentElement.scrollTop;
-                    let maxScrollDistance = 500; 
-
-                    let newVolume = 1 - (scrollY / maxScrollDistance);
+                    let newVolume = 1 - (scrollY / MAX_SCROLL_DISTANCE);
 
                     if (newVolume < 0) newVolume = 0;
                     if (newVolume > 1) newVolume = 1;
 
-                    video.volume = newVolume;
+                    bgVideo.volume = newVolume;
                 }
             });
         });
