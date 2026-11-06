@@ -258,7 +258,7 @@
         .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
 
         /* Mobile Styles */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
             .features { grid-template-columns: 1fr; }
             .feature-item { display: flex; align-items: center; text-align: left; gap: 15px; padding: 12px 15px; }
@@ -422,7 +422,7 @@
             // ====================================================
             window.addEventListener('scroll', () => {
                 // Check if it's a mobile device (screen width 768px or less)
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth <= 1200) {
                     
                     if (!isVideoPlaying || video.muted) return; 
 
