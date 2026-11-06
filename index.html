@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yummy Foods From Kerala</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #0B1F3A;
+            --primary-gold: #C8A35C;
+            --bg-color: #F8F9FA;
+            --text-gray: #6C757D;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px 10px;
+            color: var(--primary-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- Welcome Screen --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--primary-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; transition: opacity 0.6s ease, visibility 0.6s ease; padding: 20px; text-align: center;
+        }
+
+        #welcome-screen.hidden { opacity: 0; visibility: hidden; }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif; color: var(--primary-gold); font-size: 2.5rem;
+            line-height: 1.2; margin-bottom: 30px; text-transform: uppercase; animation: fadeInDown 1s ease;
+        }
+
+        .continue-btn {
+            background-color: var(--primary-gold); color: var(--primary-dark); border: none;
+            padding: 15px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: transform 0.2s, background-color 0.2s;
+            animation: fadeInUp 1s ease; display: flex; align-items: center; gap: 10px;
+        }
+
+        .continue-btn:hover { transform: scale(1.05); background-color: #dfb76b; }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Main Content Layout --- */
+        .layout-wrapper {
+            display: flex; flex-direction: column; align-items: center; width: 100%;
+            opacity: 0; transition: opacity 0.8s ease 0.2s; gap: 25px;
+        }
+
+        .layout-wrapper.show { opacity: 1; }
+
+        /* Video Section */
+        .video-container {
+            width: 100%; max-width: 360px; aspect-ratio: 9 / 16; border-radius: 20px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); background-color: #000;
+        }
+
+        .video-container video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Main Card Section */
+        .main-card {
+            width: 100%; max-width: 800px; background: #ffffff; border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08); display: flex; flex-direction: column;
+            overflow: hidden; position: relative;
+        }
+
+        @media (min-width: 900px) {
+            .layout-wrapper { flex-direction: row; align-items: stretch; justify-content: center; max-width: 1100px; gap: 40px; }
+            .video-container { width: 360px; flex-shrink: 0; }
+            .main-card { flex-direction: row; flex-grow: 1; max-width: 750px; }
+        }
+
+        /* Card Left Side (QR) */
+        .qr-section {
+            flex: 1; padding: 40px 30px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; border-right: 1px solid #eee; text-align: center;
+        }
+
+        .qr-section h3 {
+            font-size: 0.8rem; letter-spacing: 2px; color: var(--primary-dark);
+            margin-bottom: 20px; font-weight: 600;
+        }
+
+        .qr-box {
+            background: white; padding: 15px; border-radius: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08); 
+            width: 220px; 
+            height: 220px; 
+            display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+        }
+
+        .qr-box img { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 12px; 
+            object-fit: contain; 
+        }
+
+        .qr-section p { font-size: 0.75rem; letter-spacing: 3px; font-weight: 600; color: var(--primary-dark); }
+
+        /* Card Right Side (Info) */
+        .info-section { flex: 1.5; display: flex; flex-direction: column; }
+        .info-content { padding: 30px; flex-grow: 1; }
+
+        .top-tags {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+        }
+
+        .yt-brand { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; }
+        .yt-brand i { color: #FF0000; font-size: 1.2rem; }
+
+        .category-tag {
+            border: 1px solid var(--primary-dark); padding: 4px 12px; border-radius: 20px;
+            font-size: 0.65rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif; font-size: 2rem; line-height: 1.1;
+            color: var(--primary-dark); text-transform: uppercase; margin-bottom: 15px; text-align: center;
+        }
+
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--primary-gold), transparent); margin: 15px 0; width: 100%; }
+
+        .subtitle { font-family: 'Playfair Display', serif; font-style: italic; text-align: center; font-size: 0.95rem; color: var(--text-gray); margin-bottom: 20px; }
+
+        .channel-info { text-align: center; margin-bottom: 25px; }
+        .channel-info small { font-size: 0.7rem; letter-spacing: 1px; color: var(--text-gray); font-weight: 600; display: block; margin-bottom: 8px; }
+
+        .channel-id-box {
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid #ccc; border-radius: 30px; padding: 5px 5px 5px 15px;
+            margin: 0 auto; max-width: 350px; background: #fff;
+        }
+
+        .channel-id-box span { font-size: 0.8rem; font-weight: 500; color: var(--primary-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .gold-subscribe-btn {
+            background: var(--primary-gold); color: white; padding: 10px 20px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: background 0.3s, transform 0.2s;
+            display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 10px rgba(200, 163, 92, 0.4); white-space: nowrap;
+        }
+
+        .gold-subscribe-btn:hover { background: #b58f4a; transform: scale(1.05); }
+
+        .verified { font-size: 0.7rem; color: var(--text-gray); margin-top: 10px; }
+        .verified strong { color: var(--primary-dark); letter-spacing: 1px; }
+
+        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+
+        .feature-item {
+            border: 1px solid #eee; border-radius: 12px; padding: 15px 10px;
+            text-align: center; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .feature-item i { color: var(--primary-gold); font-size: 1.2rem; margin-bottom: 8px; }
+        .feature-item h4 { font-size: 0.7rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .feature-item p { font-size: 0.6rem; color: var(--text-gray); line-height: 1.2; }
+
+        .bottom-bar {
+            background-color: var(--primary-dark); color: white; padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            text-decoration: none; transition: background 0.3s;
+        }
+
+        .bottom-bar:hover { background-color: #15305c; }
+        .bottom-bar span { font-size: 0.7rem; letter-spacing: 1px; font-weight: 500; }
+        .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
+
+        @media (max-width: 768px) {
+            .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
+            .features { grid-template-columns: 1fr; }
+            .feature-item { display: flex; align-items: center; text-align: left; gap: 15px; padding: 12px 15px; }
+            .feature-item i { margin-bottom: 0; font-size: 1.5rem; }
+            .bottom-bar { flex-direction: column; gap: 10px; text-align: center; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <h1 class="welcome-title">Welcome to<br>Yummy Foods</h1>
+        <button id="continue-btn" class="continue-btn">
+            Continue <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="layout-wrapper" id="main-content">
+        
+        <!-- Video -->
+        <div class="video-container">
+            <video id="bg-video" loop muted playsinline preload="auto">
+                <source src="Start.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Card -->
+        <div class="main-card">
+            
+            <!-- QR Code -->
+            <div class="qr-section">
+                <h3>SCAN WITH GOOGLE LENS</h3>
+                <div class="qr-box">
+                    <!-- Added a cache-busting query string (?v=1) to force the browser to load the new image -->
+                    <img src="qr.png?v=2" alt="QR Code">
+                </div>
+                <p>SCAN & SUBSCRIBE</p>
+            </div>
+
+            <!-- Info -->
+            <div class="info-section">
+                <div class="info-content">
+                    <div class="top-tags">
+                        <div class="yt-brand"><i class="fab fa-youtube"></i> YOUTUBE CHANNEL</div>
+                        <div class="category-tag">FOOD & TRAVEL • KERALA</div>
+                    </div>
+
+                    <h1 class="main-title">Yummy Foods<br>From Kerala</h1>
+                    <div class="divider"></div>
+                    <p class="subtitle">Discover Delicious Foods & Restaurants Across Kerala</p>
+
+                    <div class="channel-info">
+                        <small>CHANNEL ID</small>
+                        <div class="channel-id-box">
+                            <span>yummyfoodsfromkerala-oz2vj</span>
+                            <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="gold-subscribe-btn">
+                                SUBSCRIBE <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                        <div class="verified"><strong>VERIFIED</strong> Personal Channel • Not a business</div>
+                    </div>
+
+                    <div class="features">
+                        <div class="feature-item">
+                            <i class="fas fa-utensils"></i>
+                            <div><h4>Food Exploration</h4><p>Authentic Tastes</p></div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-wine-glass-alt"></i>
+                            <div><h4>Restaurant Reviews</h4><p>Honest & Local</p></div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <div><h4>Travel Stories</h4><p>Across Kerala</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="bottom-bar">
+                    <span>SCAN THE QR CODE AND SUBSCRIBE TO OUR CHANNEL</span>
+                    <div class="icons">
+                        <i class="fas fa-thumbs-up"></i>
+                        <i class="fas fa-share"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const continueBtn = document.getElementById('continue-btn');
+            const mainContent = document.getElementById('main-content');
+            const video = document.getElementById('bg-video');
+
+            continueBtn.addEventListener('click', () => {
+                welcomeScreen.classList.add('hidden');
+                mainContent.classList.add('show');
+                video.muted = false; 
+                video.play().catch(error => {
+                    console.log("Autoplay blocked. Playing muted.", error);
+                    video.muted = true;
+                    video.play();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
