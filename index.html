@@ -123,14 +123,14 @@
         }
 
         /* =========================================
-           DESKTOP ADJUSTMENTS (900px and above)
+           DESKTOP ADJUSTMENTS (Changed to 1200px)
            ========================================= */
-        @media (min-width: 900px) {
+        @media (min-width: 1200px) {
             body { justify-content: center; }
             
             .layout-wrapper { 
                 flex-direction: row; 
-                align-items: stretch; /* Makes video and card equal height */
+                align-items: stretch; 
                 justify-content: center; 
                 max-width: 1050px; 
                 gap: 30px; 
@@ -257,7 +257,7 @@
         .bottom-bar span { font-size: 0.7rem; letter-spacing: 1px; font-weight: 500; }
         .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
 
-        /* Mobile Styles */
+        /* Mobile Styles (Changed to 1200px) */
         @media (max-width: 1200px) {
             .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
             .features { grid-template-columns: 1fr; }
@@ -406,8 +406,8 @@
                     isVideoPlaying = true;
                 });
 
-                // Auto Scroll (Mobile only)
-                if (window.innerWidth <= 768) {
+                // Auto Scroll (Mobile/Tablet only - Changed to 1200)
+                if (window.innerWidth <= 1200) {
                     setTimeout(() => {
                         mainCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         setTimeout(() => {
@@ -418,16 +418,15 @@
             });
 
             // ====================================================
-            // SCROLL VOLUME CONTROL (ANDROID/MOBILE ONLY)
+            // SCROLL VOLUME CONTROL (MOBILE/TABLET ONLY - Changed to 1200)
             // ====================================================
             window.addEventListener('scroll', () => {
-                // Check if it's a mobile device (screen width 768px or less)
                 if (window.innerWidth <= 1200) {
                     
                     if (!isVideoPlaying || video.muted) return; 
 
                     let scrollY = window.scrollY || document.documentElement.scrollTop;
-                    let maxScrollDistance = 500; // 500px scroll cheythal audio full mute aakum
+                    let maxScrollDistance = 500; 
 
                     let newVolume = 1 - (scrollY / maxScrollDistance);
 
