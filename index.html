@@ -122,13 +122,43 @@
             overflow: hidden; position: relative;
         }
 
+        /* =========================================
+           DESKTOP ADJUSTMENTS (900px and above)
+           ========================================= */
         @media (min-width: 900px) {
             body { justify-content: center; }
-            .layout-wrapper { flex-direction: row; align-items: stretch; justify-content: center; max-width: 1100px; gap: 40px; }
-            .video-wrapper { width: 360px; flex-shrink: 0; justify-content: center; }
-            .video-container { height: 500px; } 
+            
+            .layout-wrapper { 
+                flex-direction: row; 
+                align-items: stretch; /* Makes video and card equal height */
+                justify-content: center; 
+                max-width: 1050px; 
+                gap: 30px; 
+            }
+            
+            .video-wrapper { 
+                width: 380px; 
+                flex-shrink: 0; 
+                justify-content: center; 
+            }
+            
+            .video-container { 
+                height: 100%; 
+                max-height: 550px; 
+                aspect-ratio: 9 / 16; 
+            } 
+            
             .scroll-down { display: none; } 
-            .main-card { flex-direction: row; flex-grow: 1; max-width: 750px; }
+            
+            .main-card { 
+                flex-direction: row; 
+                flex-grow: 1; 
+                max-width: 750px; 
+                height: auto; 
+            }
+
+            .info-content { padding: 35px 30px; } 
+            .qr-section { padding: 40px 20px; }
         }
 
         /* Card Left Side (QR) */
@@ -357,17 +387,15 @@
             const mainCard = document.getElementById('main-card');
             const videoWrapper = document.getElementById('video-wrapper');
 
-            // Video-യുടെ പ്രാരംഭ വോളിയം (0.0 മുതൽ 1.0 വരെ)
             const MAX_VOLUME = 1.0; 
             let isVideoPlaying = false;
 
-            // Continue Button Click
             continueBtn.addEventListener('click', () => {
                 welcomeScreen.classList.add('hidden');
                 mainContent.classList.add('show');
                 
                 video.muted = false; 
-                video.volume = MAX_VOLUME; // Start at full volume
+                video.volume = MAX_VOLUME;
                 
                 video.play().then(() => {
                     isVideoPlaying = true;
@@ -378,7 +406,7 @@
                     isVideoPlaying = true;
                 });
 
-                // Auto Scroll logic for mobile
+                // Auto Scroll (Mobile only)
                 if (window.innerWidth <= 768) {
                     setTimeout(() => {
                         mainCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -389,25 +417,25 @@
                 }
             });
 
-            // --- Scroll Event: Change Video Volume ---
+            // ====================================================
+            // SCROLL VOLUME CONTROL (ANDROID/MOBILE ONLY)
+            // ====================================================
             window.addEventListener('scroll', () => {
-                if (!isVideoPlaying || video.muted) return; // Video mute ആണെങ്കിൽ ഒന്നും ചെയ്യേണ്ട
+                // Check if it's a mobile device (screen width 768px or less)
+                if (window.innerWidth <= 768) {
+                    
+                    if (!isVideoPlaying || video.muted) return; 
 
-                // എത്രത്തോളം സ്ക്രോൾ ചെയ്തു എന്ന് കണക്കാക്കുന്നു (Pixels-ൽ)
-                let scrollY = window.scrollY || document.documentElement.scrollTop;
-                
-                // സ്ക്രോൾ ചെയ്യേണ്ട പരമാവധി ദൂരം (ഇവിടെ 600px നു ശേഷം വോളിയം പൂർണ്ണമായും കുറയും)
-                let maxScrollDistance = 600; 
+                    let scrollY = window.scrollY || document.documentElement.scrollTop;
+                    let maxScrollDistance = 500; // 500px scroll cheythal audio full mute aakum
 
-                // വോളിയം കണക്കാക്കുന്നു (1.0 - 0.0)
-                let newVolume = 1 - (scrollY / maxScrollDistance);
+                    let newVolume = 1 - (scrollY / maxScrollDistance);
 
-                // വോളിയം 0-നും 1-നും ഇടയിൽ മാത്രം ആയിരിക്കാൻ
-                if (newVolume < 0) newVolume = 0;
-                if (newVolume > 1) newVolume = 1;
+                    if (newVolume < 0) newVolume = 0;
+                    if (newVolume > 1) newVolume = 1;
 
-                // വീഡിയോയുടെ വോളിയം അപ്ഡേറ്റ് ചെയ്യുന്നു
-                video.volume = newVolume;
+                    video.volume = newVolume;
+                }
             });
         });
     </script>
