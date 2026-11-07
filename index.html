@@ -242,14 +242,14 @@
 </head>
 <body>
 
-    <!-- Subscribe Animation Video Overlay (Removed 'muted' attribute) -->
+    <!-- Subscribe Animation Video Overlay -->
     <div id="subscribe-overlay">
         <video id="subscribe-video" playsinline>
             <source src="subscribe.webm" type="video/webm">
         </video>
         
-        <!-- This button appears only after the video ends -->
-        <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer">
+        <!-- Added onclick="closeOverlay()" to hide the overlay when clicked -->
+        <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" onclick="closeOverlay()">
             Go to YouTube Channel <i class="fab fa-youtube"></i>
         </a>
     </div>
@@ -422,7 +422,7 @@
         let isYouTubePlaying = false;
 
         // ==========================================
-        // SUBSCRIBE ANIMATION LOGIC
+        // SUBSCRIBE ANIMATION & CLOSE LOGIC
         // ==========================================
         function playSubscribeAnimation() {
             const overlay = document.getElementById('subscribe-overlay');
@@ -444,6 +444,18 @@
             video.onended = function() {
                 gotoBtn.style.display = 'inline-flex';
             };
+        }
+
+        // Function to close the overlay when the user clicks "Go to YouTube"
+        function closeOverlay() {
+            const overlay = document.getElementById('subscribe-overlay');
+            const video = document.getElementById('subscribe-video');
+            
+            // Hide the overlay
+            overlay.style.display = 'none';
+            
+            // Stop the video so it doesn't play in the background
+            video.pause();
         }
 
         // ==========================================
