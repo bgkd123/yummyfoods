@@ -30,6 +30,65 @@
             position: relative;
         }
 
+        /* --- Dynamic Seasonal Greeting Banner --- */
+        .seasonal-banner {
+            display: none; 
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(90deg, #4a148c, #7b1fa2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(123, 31, 162, 0.4);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .seasonal-banner i {
+            font-size: 1.3rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Diwali Specific Colors and Glow */
+        .seasonal-banner.diwali {
+            background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100);
+            border: 1px solid #ffcc80;
+            text-shadow: 0 0 10px rgba(255, 204, 128, 0.8);
+        }
+        
+        /* Special floating diya/flower icons */
+        .diya-decor {
+            position: fixed;
+            font-size: 1.5rem;
+            opacity: 0.7;
+            animation: floatDiya 4s infinite ease-in-out;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        @keyframes floatDiya {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+            50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,255,255,1); }
+            100% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        }
+
         /* --- Background Animation --- */
         .bg-bubbles {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -358,6 +417,13 @@
         <li></li><li></li><li></li><li></li><li></li><li></li>
     </ul>
 
+    <!-- Dynamic Seasonal Greeting Banner -->
+    <div id="festival-banner" class="seasonal-banner">
+        <i class="fas fa-star"></i>
+        <span id="festival-text">Happy Diwali!</span>
+        <i class="fas fa-star"></i>
+    </div>
+
     <!-- Welcome Screen -->
     <div id="welcome-screen">
         <h1 class="welcome-title">Welcome to<br>Yummy Foods</h1>
@@ -508,6 +574,54 @@
         let ytPlayer; 
         let isYouTubePlaying = false;
 
+        // ==========================================
+        // FESTIVAL LOGIC (Date based)
+        // ==========================================
+        function checkFestival() {
+            const today = new Date();
+            const month = today.getMonth() + 1; // 1 = Jan, 11 = Nov, 12 = Dec
+            const day = today.getDate();
+            const banner = document.getElementById('festival-banner');
+            const text = document.getElementById('festival-text');
+
+            // --- DIWALI (Nov 8th) ---
+            // NOTE: Change the year '2026' and date '8' according to the current year's Diwali
+            if (month === 11 && day === 8) {
+                banner.style.display = 'flex';
+                banner.classList.add('diwali');
+                text.innerHTML = "✨ Happy Diwali! ✨<br><span style='font-size:0.75rem; font-weight:normal;'>Wishing you a festival of lights and joy!</span>";
+                createDiyaDecorations();
+            }
+            // --- CHRISTMAS (Dec 25th) ---
+            else if (month === 12 && day === 25) {
+                banner.style.display = 'flex';
+                banner.classList.add('christmas');
+                text.innerHTML = "🎄 Merry Christmas! 🎄<br><span style='font-size:0.75rem; font-weight:normal;'>May your days be merry and bright!</span>";
+            }
+        }
+
+        // Function to create floating Diya (lamp) decorations for Diwali
+        function createDiyaDecorations() {
+            // Create 5 floating diyas randomly
+            for (let i = 0; i < 5; i++) {
+                const diya = document.createElement('div');
+                diya.classList.add('diya-decor');
+                diya.innerHTML = '🪔'; // Diya emoji
+                
+                // Random position
+                diya.style.left = Math.random() * 80 + 10 + '%';
+                diya.style.top = Math.random() * 80 + 10 + '%';
+                
+                // Random delay
+                diya.style.animationDelay = Math.random() * 3 + 's';
+                
+                document.body.appendChild(diya);
+            }
+        }
+
+        // ==========================================
+        // MAIN LOGIC
+        // ==========================================
         function extractVideoID(url) {
             url = url.trim(); 
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -560,6 +674,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             setThumbnail();
+            checkFestival(); // Check if today is a festival
 
             const welcomeScreen = document.getElementById('welcome-screen');
             const continueBtn = document.getElementById('continue-btn');
