@@ -422,31 +422,34 @@
         let isYouTubePlaying = false;
 
         // ==========================================
-        // SUBSCRIBE ANIMATION & CLOSE LOGIC
+        // SUBSCRIBE ANIMATION & CLOSE LOGIC (WITH HISTORY API)
         // ==========================================
         function playSubscribeAnimation() {
             const overlay = document.getElementById('subscribe-overlay');
             const video = document.getElementById('subscribe-video');
             const gotoBtn = document.getElementById('goto-youtube-btn');
 
-            // Hide the button initially
+            // 1. Add a new state to browser history so the back button works
+            history.pushState({ overlay: 'open' }, '');
+
+            // 2. Hide the button initially
             gotoBtn.style.display = 'none';
 
-            // Show overlay and play video with sound
+            // 3. Show overlay and play video with sound
             overlay.style.display = 'flex';
             video.currentTime = 0; 
             video.play();
 
-            // Pause background video
+            // 4. Pause background video
             document.getElementById('bg-video').pause();
 
-            // When video ends, show the button
+            // 5. When video ends, show the button
             video.onended = function() {
                 gotoBtn.style.display = 'inline-flex';
             };
         }
 
-        // Function to close the overlay when the user clicks "Go to YouTube"
+        // Function to close the overlay manually (e.g., clicking the YouTube button)
         function closeOverlay() {
             const overlay = document.getElementById('subscribe-overlay');
             const video = document.getElementById('subscribe-video');
@@ -454,9 +457,19 @@
             // Hide the overlay
             overlay.style.display = 'none';
             
-            // Stop the video so it doesn't play in the background
+            // Stop the video
             video.pause();
         }
+
+        // Function to handle Phone Back Button press (popstate event)
+        window.addEventListener('popstate', function(event) {
+            const overlay = document.getElementById('subscribe-overlay');
+            
+            // If overlay is currently visible, hide it
+            if (overlay.style.display === 'flex') {
+                closeOverlay();
+            }
+        });
 
         // ==========================================
         // FESTIVAL LOGIC (Date based)
