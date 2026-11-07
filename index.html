@@ -57,14 +57,12 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* Diwali Specific Colors and Glow */
         .seasonal-banner.diwali {
             background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100);
             border: 1px solid #ffcc80;
             text-shadow: 0 0 10px rgba(255, 204, 128, 0.8);
         }
         
-        /* Special floating diya/flower icons */
         .diya-decor {
             position: fixed;
             font-size: 1.5rem;
@@ -441,8 +439,9 @@
             <span class="video-tagline">Watch Our Latest Adventure</span>
             
             <div class="video-container">
+                <!-- CHANGED: Source from MP4 to WEBM -->
                 <video id="bg-video" loop muted playsinline preload="auto">
-                    <source src="Start.mp4" type="video/mp4">
+                    <source src="Start.webm" type="video/webm">
                 </video>
             </div>
             
@@ -579,13 +578,12 @@
         // ==========================================
         function checkFestival() {
             const today = new Date();
-            const month = today.getMonth() + 1; // 1 = Jan, 11 = Nov, 12 = Dec
+            const month = today.getMonth() + 1; 
             const day = today.getDate();
             const banner = document.getElementById('festival-banner');
             const text = document.getElementById('festival-text');
 
             // --- DIWALI (Nov 8th) ---
-            // NOTE: Change the year '2026' and date '8' according to the current year's Diwali
             if (month === 11 && day === 8) {
                 banner.style.display = 'flex';
                 banner.classList.add('diwali');
@@ -600,21 +598,14 @@
             }
         }
 
-        // Function to create floating Diya (lamp) decorations for Diwali
         function createDiyaDecorations() {
-            // Create 5 floating diyas randomly
             for (let i = 0; i < 5; i++) {
                 const diya = document.createElement('div');
                 diya.classList.add('diya-decor');
-                diya.innerHTML = '🪔'; // Diya emoji
-                
-                // Random position
+                diya.innerHTML = '🪔'; 
                 diya.style.left = Math.random() * 80 + 10 + '%';
                 diya.style.top = Math.random() * 80 + 10 + '%';
-                
-                // Random delay
                 diya.style.animationDelay = Math.random() * 3 + 's';
-                
                 document.body.appendChild(diya);
             }
         }
@@ -674,7 +665,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             setThumbnail();
-            checkFestival(); // Check if today is a festival
+            checkFestival();
 
             const welcomeScreen = document.getElementById('welcome-screen');
             const continueBtn = document.getElementById('continue-btn');
