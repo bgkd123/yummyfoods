@@ -37,17 +37,46 @@
             background-color: rgba(0, 0, 0, 0.95);
             z-index: 9999;
             display: none; 
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
         }
 
         #subscribe-overlay video {
             width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
+            max-width: 400px;
+            max-height: 70vh;
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
+        }
+
+        /* Hide button initially */
+        #goto-youtube-btn {
+            display: none;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #d4af37, #C8A35C);
+            color: var(--primary-dark);
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(200, 163, 92, 0.5);
+            transition: all 0.3s ease;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            animation: zoomIn 0.5s ease;
+        }
+
+        #goto-youtube-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(200, 163, 92, 0.8);
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         /* --- Dynamic Seasonal Greeting Banner --- */
@@ -218,6 +247,11 @@
         <video id="subscribe-video" playsinline muted>
             <source src="subscribe.webm" type="video/webm">
         </video>
+        
+        <!-- This button appears only after the video ends -->
+        <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer">
+            Go to YouTube Channel <i class="fab fa-youtube"></i>
+        </a>
     </div>
 
     <!-- Background Animation -->
@@ -310,10 +344,10 @@
                         <small>CHANNEL ID</small>
                         <div class="channel-id-box">
                             <span>yummyfoodsfromkerala-oz2vj</span>
-                            <!-- Link opened immediately on click to prevent popup block -->
-                            <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="gold-subscribe-btn" onclick="playSubscribeAnimation()">
+                            <!-- Changed to a button so it doesn't open immediately -->
+                            <button class="gold-subscribe-btn" onclick="playSubscribeAnimation()">
                                 SUBSCRIBE <i class="fab fa-youtube"></i>
-                            </a>
+                            </button>
                         </div>
                         <div class="verified"><strong>VERIFIED</strong> Personal Channel • Not a business</div>
                     </div>
@@ -389,25 +423,27 @@
         let isYouTubePlaying = false;
 
         // ==========================================
-        // SUBSCRIBE ANIMATION LOGIC (FIXED)
+        // SUBSCRIBE ANIMATION LOGIC
         // ==========================================
         function playSubscribeAnimation() {
             const overlay = document.getElementById('subscribe-overlay');
             const video = document.getElementById('subscribe-video');
+            const gotoBtn = document.getElementById('goto-youtube-btn');
+
+            // Hide the button initially
+            gotoBtn.style.display = 'none';
 
             // Show overlay and play video
             overlay.style.display = 'flex';
             video.currentTime = 0; 
-            // Note: We use muted so browsers allow autoplay of the animation without blocking.
-            // Since we are not using a separate window.open() here, the main link (target="_blank") will open automatically.
             video.play();
 
             // Pause background video
             document.getElementById('bg-video').pause();
 
-            // After video finishes, hide the overlay
+            // When video ends, show the button
             video.onended = function() {
-                overlay.style.display = 'none';
+                gotoBtn.style.display = 'inline-flex';
             };
         }
 
