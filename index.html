@@ -30,6 +30,26 @@
             position: relative;
         }
 
+        /* --- Subscribe Video Overlay --- */
+        #subscribe-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #subscribe-overlay video {
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
+        }
+
         /* --- Dynamic Seasonal Greeting Banner --- */
         .seasonal-banner {
             display: none; 
@@ -399,6 +419,26 @@
         .bottom-bar span { font-size: 0.7rem; letter-spacing: 1px; font-weight: 500; }
         .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
 
+        /* =========================================
+           Footer Creator Credit
+           ========================================= */
+        .creator-credit {
+            width: 100%;
+            max-width: 1050px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #adb5bd;
+            padding: 25px 0 10px 0;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+        .creator-credit strong {
+            color: var(--primary-gold);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        /* ========================================= */
+
         @media (max-width: 1200px) {
             .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
             .features { grid-template-columns: 1fr; }
@@ -409,6 +449,13 @@
     </style>
 </head>
 <body>
+
+    <!-- Subscribe Animation Video Overlay -->
+    <div id="subscribe-overlay">
+        <video id="subscribe-video" playsinline>
+            <source src="subscribe.webm" type="video/webm">
+        </video>
+    </div>
 
     <!-- Background Animation -->
     <ul class="bg-bubbles">
@@ -438,8 +485,7 @@
         <div class="video-wrapper" id="video-wrapper">
             <span class="video-tagline">Watch Our Latest Adventure</span>
             
-            <div class="video-container">
-                <!-- CHANGED: Source from MP4 to WEBM -->
+            <div class="video-container" id="video-container">
                 <video id="bg-video" loop muted playsinline preload="auto">
                     <source src="Start.webm" type="video/webm">
                 </video>
@@ -501,7 +547,8 @@
                         <small>CHANNEL ID</small>
                         <div class="channel-id-box">
                             <span>yummyfoodsfromkerala-oz2vj</span>
-                            <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="gold-subscribe-btn">
+                            <!-- Subscribe Button Updated with OnClick Event -->
+                            <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="gold-subscribe-btn" onclick="playSubscribeAnimation(event)">
                                 SUBSCRIBE <i class="fab fa-youtube"></i>
                             </a>
                         </div>
@@ -559,6 +606,11 @@
         </div>
     </div>
 
+    <!-- Footer Creator Credit -->
+    <div class="creator-credit">
+        Designed & Developed: <strong>Bg</strong>
+    </div>
+
     <!-- YouTube Iframe API Script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -572,6 +624,45 @@
         let latestVideoId = "";
         let ytPlayer; 
         let isYouTubePlaying = false;
+
+        // ==========================================
+        // SUBSCRIBE ANIMATION LOGIC
+        // ==========================================
+        function playSubscribeAnimation(event) {
+            // Prevent default link opening immediately
+            event.preventDefault(); 
+            
+            const overlay = document.getElementById('subscribe-overlay');
+            const video = document.getElementById('subscribe-video');
+            const youtubeUrl = "https://youtube.com/@yummyfoodsfromkerala-oz2vj";
+
+            // Show overlay and play video
+            overlay.style.display = 'flex';
+            video.currentTime = 0; // Reset video
+            video.play();
+
+            // Pause background video
+            document.getElementById('bg-video').pause();
+
+            // After video finishes (or after a specific time like 2 seconds), open YouTube
+            video.onended = function() {
+                overlay.style.display = 'none';
+                // Open YouTube channel in a new tab
+                window.open(youtubeUrl, '_blank');
+            };
+
+            // Fallback: If the video fails to load or is very long, 
+            // we can set a max timeout (e.g., 3 seconds) to open YouTube anyway.
+            // Uncomment the lines below if you want a forced timeout.
+            /*
+            setTimeout(() => {
+                if(overlay.style.display !== 'none') {
+                    overlay.style.display = 'none';
+                    window.open(youtubeUrl, '_blank');
+                }
+            }, 3000); // 3 seconds
+            */
+        }
 
         // ==========================================
         // FESTIVAL LOGIC (Date based)
