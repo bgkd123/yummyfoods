@@ -198,7 +198,7 @@
         .channel-id-box { display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; border-radius: 30px; padding: 5px 5px 5px 15px; margin: 0 auto; max-width: 360px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .channel-id-box span { font-size: 0.75rem; font-weight: 500; color: var(--primary-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .gold-subscribe-btn { position: relative; overflow: hidden; background: linear-gradient(135deg, #d4af37, #C8A35C); color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: all 0.3s ease; cursor: pointer; }
+        .gold-subscribe-btn { position: relative; overflow: hidden; background: linear-gradient(135deg, #d4af37, #C8A35C); color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: all 0.3s ease; cursor: pointer; border: none; font-family: inherit; }
         .gold-subscribe-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: shine 3s infinite; }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
         .gold-subscribe-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200, 163, 92, 0.6); }
@@ -242,9 +242,9 @@
 </head>
 <body>
 
-    <!-- Subscribe Animation Video Overlay -->
+    <!-- Subscribe Animation Video Overlay (Removed 'muted' attribute) -->
     <div id="subscribe-overlay">
-        <video id="subscribe-video" playsinline muted>
+        <video id="subscribe-video" playsinline>
             <source src="subscribe.webm" type="video/webm">
         </video>
         
@@ -344,7 +344,6 @@
                         <small>CHANNEL ID</small>
                         <div class="channel-id-box">
                             <span>yummyfoodsfromkerala-oz2vj</span>
-                            <!-- Changed to a button so it doesn't open immediately -->
                             <button class="gold-subscribe-btn" onclick="playSubscribeAnimation()">
                                 SUBSCRIBE <i class="fab fa-youtube"></i>
                             </button>
@@ -433,7 +432,7 @@
             // Hide the button initially
             gotoBtn.style.display = 'none';
 
-            // Show overlay and play video
+            // Show overlay and play video with sound
             overlay.style.display = 'flex';
             video.currentTime = 0; 
             video.play();
