@@ -28,7 +28,6 @@
             color: var(--primary-dark);
             overflow-x: hidden;
             position: relative;
-            /* Prevent text selection entirely on mobile */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -59,10 +58,7 @@
             background-color: rgba(11, 31, 58, 0.98); z-index: 10000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             padding: 20px; text-align: center;
-            /* Prevent selection in overlay */
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; -ms-user-select: none; user-select: none;
         }
 
         #puzzle-title {
@@ -80,11 +76,19 @@
             transition: all 0.5s ease;
         }
 
-        /* When Solved, show the background image */
-        #puzzle-board.solved {
-            background-image: url('puzzle.jpg');
-            background-size: cover;
-            background-position: center;
+        /* Video Container for solved state */
+        #puzzle-video-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none; /* Hidden initially */
+            z-index: 10;
+            background-color: #000;
+        }
+
+        #puzzle-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Individual pieces (Numbers) */
@@ -98,11 +102,7 @@
             border-radius: 6px;
             transition: all 0.2s ease;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-            
-            /* FIX: Prevent text selection on click */
-            -webkit-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none; 
+            -webkit-user-select: none; -ms-user-select: none; user-select: none; 
         }
         
         .puzzle-piece:hover { background-color: #a06b36; }
@@ -117,7 +117,7 @@
         }
         .puzzle-piece.empty span { display: none; }
 
-        /* Hide pieces when solved to show full image */
+        /* Hide pieces when solved to show video */
         #puzzle-board.solved .puzzle-piece {
             opacity: 0;
             pointer-events: none;
@@ -301,7 +301,14 @@
     <!-- Puzzle Game Overlay -->
     <div id="puzzle-overlay">
         <h2 id="puzzle-title">Solve the Puzzle!</h2>
-        <div id="puzzle-board"></div>
+        <div id="puzzle-board">
+            <!-- The video is inside the board but hidden initially -->
+            <div id="puzzle-video-container">
+                <video id="puzzle-video" loop playsinline>
+                    <source src="puzzle.webm" type="video/webm">
+                </video>
+            </div>
+        </div>
         <div id="puzzle-message">Awesome! 🎉</div>
         <div id="countdown-text">Returning to main page in 6...</div>
     </div>
@@ -476,27 +483,38 @@
         // ==========================================
         // PUZZLE GAME LOGIC (8-Piece Sliding)
         // ==========================================
-        let puzzleState = []; // Stores the current arrangement
-        let emptyIndex = 8; // The last slot starts empty
+        let puzzleState = []; 
+        let emptyIndex = 8; 
         let countdownInterval;
+        let videoTimeout;
 
         function startPuzzle() {
             const overlay = document.getElementById('puzzle-overlay');
             const board = document.getElementById('puzzle-board');
             const message = document.getElementById('puzzle-message');
             const countdownText = document.getElementById('countdown-text');
+            const videoContainer = document.getElementById('puzzle-video-container');
+            const video = document.getElementById('puzzle-video');
             
             // Reset state
             overlay.style.display = 'flex';
             message.style.display = 'none';
             countdownText.style.display = 'none';
             board.classList.remove('solved');
+            videoContainer.style.display = 'none'; 
+            video.pause(); 
+            video.currentTime = 0;
             clearInterval(countdownInterval); 
+            clearTimeout(videoTimeout);
             
             history.pushState({ puzzle: 'open' }, '');
             document.getElementById('bg-video').pause();
 
-            // Initialize Solved State [1,2,3,4,5,6,7,8,0] where 0 is empty
+            // Clear only puzzle pieces, keep the video container
+            const pieces = board.querySelectorAll('.puzzle-piece');
+            pieces.forEach(p => p.remove());
+
+            // Initialize Solved State
             puzzleState = [1, 2, 3, 4, 5, 6, 7, 8, 0]; 
             emptyIndex = 8;
 
@@ -505,7 +523,6 @@
                 const validMoves = getValidMoves(emptyIndex);
                 const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
                 
-                // Swap in array
                 puzzleState[emptyIndex] = puzzleState[randomMove];
                 puzzleState[randomMove] = 0;
                 emptyIndex = randomMove;
@@ -528,8 +545,13 @@
 
         function renderBoard() {
             const board = document.getElementById('puzzle-board');
-            board.innerHTML = '';
+            const videoContainer = document.getElementById('puzzle-video-container');
 
+            // Remove existing pieces
+            const pieces = board.querySelectorAll('.puzzle-piece');
+            pieces.forEach(p => p.remove());
+
+            // Create new pieces
             puzzleState.forEach((num, index) => {
                 const piece = document.createElement('div');
                 piece.classList.add('puzzle-piece');
@@ -543,18 +565,17 @@
                 }
                 
                 piece.onclick = () => movePiece(index);
-                board.appendChild(piece);
+                // Insert before the video container to keep video on top z-index
+                board.insertBefore(piece, videoContainer); 
             });
         }
 
         function movePiece(clickedIndex) {
-            // If the puzzle is already solved, do nothing
             if (document.getElementById('puzzle-board').classList.contains('solved')) return;
 
             const validMoves = getValidMoves(emptyIndex);
             
             if (validMoves.includes(clickedIndex)) {
-                // Swap in array
                 puzzleState[emptyIndex] = puzzleState[clickedIndex];
                 puzzleState[clickedIndex] = 0;
                 emptyIndex = clickedIndex;
@@ -565,7 +586,6 @@
         }
 
         function checkWin() {
-            // Check if the array is [1,2,3,4,5,6,7,8,0]
             let isSolved = true;
             for (let i = 0; i < 8; i++) {
                 if (puzzleState[i] !== i + 1) {
@@ -578,13 +598,23 @@
                 const board = document.getElementById('puzzle-board');
                 const message = document.getElementById('puzzle-message');
                 const countdownText = document.getElementById('countdown-text');
+                const videoContainer = document.getElementById('puzzle-video-container');
+                const video = document.getElementById('puzzle-video');
                 
-                // 1. Solve aayi kazhinju 1 second kazhinj image kaanikunnu
+                // 1. Solve aayi kazhinju 1 second kazhinj video kaanikunnu
                 setTimeout(() => {
-                    board.classList.add('solved'); // Shows the puzzle.jpg image (No Invert)
+                    board.classList.add('solved'); 
+                    videoContainer.style.display = 'block'; // Show video
+                    video.play(); // Play video (6 seconds)
+                    
                     message.style.display = 'block';
 
-                    // 2. Image kaanichu kazhinju 6 second countdown thudangunnu
+                    // 2. Video 6 second kazhinj nirthunnu (pause cheyyunnu)
+                    videoTimeout = setTimeout(() => {
+                        video.pause(); // Stop video exactly after 6 seconds
+                    }, 6000); // 6 seconds
+
+                    // 3. Countdown thudangunnu (6 seconds)
                     countdownText.style.display = 'block';
                     let timeLeft = 6;
                     countdownText.innerText = `Returning to main page in ${timeLeft}...`;
@@ -607,6 +637,9 @@
         function closePuzzle() {
             document.getElementById('puzzle-overlay').style.display = 'none';
             clearInterval(countdownInterval); 
+            clearTimeout(videoTimeout);
+            const video = document.getElementById('puzzle-video');
+            video.pause(); // Ensure video stops when closed
         }
 
 
