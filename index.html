@@ -28,89 +28,135 @@
             color: var(--primary-dark);
             overflow-x: hidden;
             position: relative;
+            /* Prevent text selection entirely on mobile */
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* --- Subscribe Video Overlay --- */
         #subscribe-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            z-index: 9999;
-            display: none; 
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
         }
-
         #subscribe-overlay video {
-            width: 100%;
-            max-width: 400px;
-            max-height: 70vh;
-            border-radius: 15px;
+            width: 100%; max-width: 400px; max-height: 70vh; border-radius: 15px;
             box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
         }
-
-        /* Hide button initially */
         #goto-youtube-btn {
+            display: none; margin-top: 20px; background: linear-gradient(135deg, #d4af37, #C8A35C);
+            color: var(--primary-dark); padding: 15px 35px; border-radius: 30px;
+            font-size: 1rem; font-weight: 600; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(200, 163, 92, 0.5); transition: all 0.3s ease;
+            align-items: center; gap: 10px; cursor: pointer; animation: zoomIn 0.5s ease;
+        }
+        #goto-youtube-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(200, 163, 92, 0.8); }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- Puzzle Game Overlay --- */
+        #puzzle-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(11, 31, 58, 0.98); z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+            /* Prevent selection in overlay */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
+
+        #puzzle-title {
+            color: var(--primary-gold); font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; margin-bottom: 20px; letter-spacing: 1px;
+        }
+
+        /* 8-Piece Sliding Puzzle Board */
+        #puzzle-board {
+            width: 300px; height: 300px;
+            background-color: #5c3a21; /* Brown Background */
+            border: 4px solid var(--primary-gold); border-radius: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+            gap: 4px; padding: 4px; position: relative; overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* When Solved, show the background image */
+        #puzzle-board.solved {
+            background-image: url('puzzle.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Individual pieces (Numbers) */
+        .puzzle-piece {
+            width: 100%; height: 100%;
+            background-color: #8B5A2B; /* Lighter Brown for pieces */
+            color: white; /* White Numbers */
+            font-size: 2rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; 
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            
+            /* FIX: Prevent text selection on click */
+            -webkit-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+        
+        .puzzle-piece:hover { background-color: #a06b36; }
+        .puzzle-piece:active { transform: scale(0.95); }
+        
+        /* Empty slot */
+        .puzzle-piece.empty {
+            background-color: transparent;
+            box-shadow: none;
+            cursor: default;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        .puzzle-piece.empty span { display: none; }
+
+        /* Hide pieces when solved to show full image */
+        #puzzle-board.solved .puzzle-piece {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #puzzle-message {
+            margin-top: 20px; color: white; font-size: 1rem;
+            font-family: 'Playfair Display', serif;
+            display: none; animation: fadeInUp 0.5s ease;
+        }
+
+        /* Countdown Text Style */
+        #countdown-text {
+            margin-top: 10px;
+            color: var(--primary-gold);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
             display: none;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #d4af37, #C8A35C);
-            color: var(--primary-dark);
-            padding: 15px 35px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(200, 163, 92, 0.5);
-            transition: all 0.3s ease;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            animation: zoomIn 0.5s ease;
+            animation: fadeInUp 0.5s ease;
         }
 
-        #goto-youtube-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(200, 163, 92, 0.8);
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- Dynamic Seasonal Greeting Banner --- */
         .seasonal-banner {
-            display: none; 
-            width: 100%;
-            max-width: 800px;
+            display: none; width: 100%; max-width: 800px;
             background: linear-gradient(90deg, #4a148c, #7b1fa2);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 50px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(123, 31, 162, 0.4);
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+            color: white; padding: 15px 20px; border-radius: 50px; margin-bottom: 20px;
+            text-align: center; box-shadow: 0 8px 25px rgba(123, 31, 162, 0.4);
+            font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; z-index: 100;
+            align-items: center; justify-content: center; gap: 15px;
             animation: slideDown 0.8s ease-out;
         }
-
         .seasonal-banner i { font-size: 1.3rem; animation: pulse 1.5s infinite; }
         .seasonal-banner.diwali { background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100); border: 1px solid #ffcc80; text-shadow: 0 0 10px rgba(255, 204, 128, 0.8); }
         
         .diya-decor { position: fixed; font-size: 1.5rem; opacity: 0.7; animation: floatDiya 4s infinite ease-in-out; z-index: -1; pointer-events: none; }
-        
-        @keyframes floatDiya {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
-        }
-
+        @keyframes floatDiya { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes pulse { 0% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } 50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,255,255,1); } 100% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } }
 
@@ -132,7 +178,6 @@
         .welcome-subtitle { color: #d1d5db; font-size: 0.9rem; margin-bottom: 30px; font-weight: 300; animation: fadeInUp 1s ease 0.3s both; }
         .continue-btn { background-color: var(--primary-gold); color: var(--primary-dark); border: none; padding: 15px 45px; font-size: 1.1rem; font-weight: 600; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; animation: fadeInUp 1s ease 0.6s both; }
         .continue-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(200, 163, 92, 0.6); }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- Main Content Layout --- */
@@ -227,9 +272,10 @@
         .bottom-bar span { font-size: 0.7rem; letter-spacing: 1px; font-weight: 500; }
         .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
 
-        /* Footer Creator Credit */
+        /* Footer Creator Credit & Puzzle Trigger */
         .creator-credit { width: 100%; max-width: 1050px; text-align: center; font-size: 0.75rem; color: #adb5bd; padding: 25px 0 10px 0; margin-top: 10px; letter-spacing: 0.5px; }
-        .creator-credit strong { color: var(--primary-gold); font-weight: 600; letter-spacing: 1px; }
+        .creator-credit strong { color: var(--primary-gold); font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: color 0.3s ease; }
+        .creator-credit strong:hover { color: #fff; text-shadow: 0 0 10px var(--primary-gold); }
 
         @media (max-width: 1200px) {
             .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
@@ -242,16 +288,22 @@
 </head>
 <body>
 
-    <!-- Subscribe Animation Video Overlay -->
+    <!-- Subscribe Video Overlay -->
     <div id="subscribe-overlay">
         <video id="subscribe-video" playsinline>
             <source src="subscribe.webm" type="video/webm">
         </video>
-        
-        <!-- Added onclick="closeOverlay()" to hide the overlay when clicked -->
         <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" onclick="closeOverlay()">
             Go to YouTube Channel <i class="fab fa-youtube"></i>
         </a>
+    </div>
+
+    <!-- Puzzle Game Overlay -->
+    <div id="puzzle-overlay">
+        <h2 id="puzzle-title">Solve the Puzzle!</h2>
+        <div id="puzzle-board"></div>
+        <div id="puzzle-message">Awesome! 🎉</div>
+        <div id="countdown-text">Returning to main page in 6...</div>
     </div>
 
     <!-- Background Animation -->
@@ -402,9 +454,9 @@
         </div>
     </div>
 
-    <!-- Footer Creator Credit -->
+    <!-- Footer Creator Credit (Puzzle Trigger) -->
     <div class="creator-credit">
-        Designed & Developed: <strong>Bg</strong>
+        Designed & Developed: <strong onclick="startPuzzle()">Bg</strong>
     </div>
 
     <!-- YouTube Iframe API Script -->
@@ -422,52 +474,179 @@
         let isYouTubePlaying = false;
 
         // ==========================================
-        // SUBSCRIBE ANIMATION & CLOSE LOGIC (WITH HISTORY API)
+        // PUZZLE GAME LOGIC (8-Piece Sliding)
+        // ==========================================
+        let puzzleState = []; // Stores the current arrangement
+        let emptyIndex = 8; // The last slot starts empty
+        let countdownInterval;
+
+        function startPuzzle() {
+            const overlay = document.getElementById('puzzle-overlay');
+            const board = document.getElementById('puzzle-board');
+            const message = document.getElementById('puzzle-message');
+            const countdownText = document.getElementById('countdown-text');
+            
+            // Reset state
+            overlay.style.display = 'flex';
+            message.style.display = 'none';
+            countdownText.style.display = 'none';
+            board.classList.remove('solved');
+            clearInterval(countdownInterval); 
+            
+            history.pushState({ puzzle: 'open' }, '');
+            document.getElementById('bg-video').pause();
+
+            // Initialize Solved State [1,2,3,4,5,6,7,8,0] where 0 is empty
+            puzzleState = [1, 2, 3, 4, 5, 6, 7, 8, 0]; 
+            emptyIndex = 8;
+
+            // Shuffle the board (100 valid random moves)
+            for (let i = 0; i < 100; i++) {
+                const validMoves = getValidMoves(emptyIndex);
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                
+                // Swap in array
+                puzzleState[emptyIndex] = puzzleState[randomMove];
+                puzzleState[randomMove] = 0;
+                emptyIndex = randomMove;
+            }
+
+            renderBoard();
+        }
+
+        function getValidMoves(emptyIdx) {
+            const moves = [];
+            const row = Math.floor(emptyIdx / 3);
+            const col = emptyIdx % 3;
+
+            if (row > 0) moves.push(emptyIdx - 3); // Top
+            if (row < 2) moves.push(emptyIdx + 3); // Bottom
+            if (col > 0) moves.push(emptyIdx - 1); // Left
+            if (col < 2) moves.push(emptyIdx + 1); // Right
+            return moves;
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('puzzle-board');
+            board.innerHTML = '';
+
+            puzzleState.forEach((num, index) => {
+                const piece = document.createElement('div');
+                piece.classList.add('puzzle-piece');
+                
+                if (num === 0) {
+                    piece.classList.add('empty');
+                } else {
+                    const span = document.createElement('span');
+                    span.innerText = num;
+                    piece.appendChild(span);
+                }
+                
+                piece.onclick = () => movePiece(index);
+                board.appendChild(piece);
+            });
+        }
+
+        function movePiece(clickedIndex) {
+            // If the puzzle is already solved, do nothing
+            if (document.getElementById('puzzle-board').classList.contains('solved')) return;
+
+            const validMoves = getValidMoves(emptyIndex);
+            
+            if (validMoves.includes(clickedIndex)) {
+                // Swap in array
+                puzzleState[emptyIndex] = puzzleState[clickedIndex];
+                puzzleState[clickedIndex] = 0;
+                emptyIndex = clickedIndex;
+                
+                renderBoard();
+                checkWin();
+            }
+        }
+
+        function checkWin() {
+            // Check if the array is [1,2,3,4,5,6,7,8,0]
+            let isSolved = true;
+            for (let i = 0; i < 8; i++) {
+                if (puzzleState[i] !== i + 1) {
+                    isSolved = false;
+                    break;
+                }
+            }
+
+            if (isSolved) {
+                const board = document.getElementById('puzzle-board');
+                const message = document.getElementById('puzzle-message');
+                const countdownText = document.getElementById('countdown-text');
+                
+                // 1. Solve aayi kazhinju 1 second kazhinj image kaanikunnu
+                setTimeout(() => {
+                    board.classList.add('solved'); // Shows the puzzle.jpg image (No Invert)
+                    message.style.display = 'block';
+
+                    // 2. Image kaanichu kazhinju 6 second countdown thudangunnu
+                    countdownText.style.display = 'block';
+                    let timeLeft = 6;
+                    countdownText.innerText = `Returning to main page in ${timeLeft}...`;
+
+                    countdownInterval = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft > 0) {
+                            countdownText.innerText = `Returning to main page in ${timeLeft}...`;
+                        } else {
+                            countdownText.innerText = `Returning to main page...`;
+                            clearInterval(countdownInterval);
+                            closePuzzle();
+                        }
+                    }, 1000);
+                    
+                }, 1000); // 1 Second Delay
+            }
+        }
+
+        function closePuzzle() {
+            document.getElementById('puzzle-overlay').style.display = 'none';
+            clearInterval(countdownInterval); 
+        }
+
+
+        // ==========================================
+        // SUBSCRIBE ANIMATION & CLOSE LOGIC
         // ==========================================
         function playSubscribeAnimation() {
             const overlay = document.getElementById('subscribe-overlay');
             const video = document.getElementById('subscribe-video');
             const gotoBtn = document.getElementById('goto-youtube-btn');
 
-            // 1. Add a new state to browser history so the back button works
             history.pushState({ overlay: 'open' }, '');
-
-            // 2. Hide the button initially
             gotoBtn.style.display = 'none';
-
-            // 3. Show overlay and play video with sound
             overlay.style.display = 'flex';
             video.currentTime = 0; 
             video.play();
-
-            // 4. Pause background video
             document.getElementById('bg-video').pause();
 
-            // 5. When video ends, show the button
             video.onended = function() {
                 gotoBtn.style.display = 'inline-flex';
             };
         }
 
-        // Function to close the overlay manually (e.g., clicking the YouTube button)
         function closeOverlay() {
             const overlay = document.getElementById('subscribe-overlay');
             const video = document.getElementById('subscribe-video');
-            
-            // Hide the overlay
             overlay.style.display = 'none';
-            
-            // Stop the video
             video.pause();
         }
 
-        // Function to handle Phone Back Button press (popstate event)
+        // Handle Phone Back Button for BOTH overlays
         window.addEventListener('popstate', function(event) {
-            const overlay = document.getElementById('subscribe-overlay');
+            const subOverlay = document.getElementById('subscribe-overlay');
+            const puzOverlay = document.getElementById('puzzle-overlay');
             
-            // If overlay is currently visible, hide it
-            if (overlay.style.display === 'flex') {
+            if (subOverlay.style.display === 'flex') {
                 closeOverlay();
+            }
+            if (puzOverlay.style.display === 'flex') {
+                closePuzzle();
             }
         });
 
