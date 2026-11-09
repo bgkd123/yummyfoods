@@ -80,21 +80,6 @@
             transition: all 0.5s ease;
         }
 
-        /* Video Container for solved state */
-        #puzzle-video-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: none; /* Hidden initially */
-            z-index: 10;
-            background-color: #000;
-        }
-
-        #puzzle-video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
         /* Individual pieces (Numbers) */
         .puzzle-piece {
             width: 100%; height: 100%;
@@ -121,27 +106,29 @@
         }
         .puzzle-piece.empty span { display: none; }
 
-        /* Hide pieces when solved to show video */
+        /* Hide pieces when solved to show image */
         #puzzle-board.solved .puzzle-piece {
             opacity: 0;
             pointer-events: none;
         }
 
-        #puzzle-message {
-            margin-top: 20px; color: white; font-size: 1rem;
-            font-family: 'Playfair Display', serif;
-            display: none; animation: fadeInUp 0.5s ease;
+        /* =========================================
+           NEW: Fullscreen Dev Image Overlay 
+           ========================================= */
+        #dev-image-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000; /* Black background */
+            z-index: 10002; /* Highest z-index to be above everything */
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
         }
-
-        /* Countdown Text Style */
-        #countdown-text {
-            margin-top: 10px;
-            color: var(--primary-gold);
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            display: none;
-            animation: fadeInUp 0.5s ease;
+        
+        #dev-image-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensures the entire image is visible without cropping */
         }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -330,19 +317,16 @@
         </a>
     </div>
 
+    <!-- Fullscreen Dev Image Overlay (Shows after puzzle is solved) -->
+    <div id="dev-image-overlay">
+        <img src="dev.png" alt="Developer">
+    </div>
+
     <!-- Puzzle Game Overlay -->
     <div id="puzzle-overlay">
         <h2 id="puzzle-title">Solve the Puzzle!</h2>
-        <div id="puzzle-board">
-            <!-- The video is inside the board but hidden initially -->
-            <div id="puzzle-video-container">
-                <video id="puzzle-video" loop playsinline>
-                    <source src="puzzle.webm" type="video/webm">
-                </video>
-            </div>
-        </div>
-        <div id="puzzle-message">Awesome! 🎉</div>
-        <div id="countdown-text">Returning to main page in 6...</div>
+        <div id="puzzle-board"></div>
+        <!-- No message/countdown text here anymore, as the whole overlay closes -->
     </div>
 
     <!-- Background Animation -->
@@ -520,36 +504,27 @@
         // ==========================================
         let puzzleState = []; 
         let emptyIndex = 8; 
-        let countdownInterval;
-        let videoTimeout;
+        let imageTimeout;
 
         function startPuzzle() {
             const overlay = document.getElementById('puzzle-overlay');
             const board = document.getElementById('puzzle-board');
-            const message = document.getElementById('puzzle-message');
-            const countdownText = document.getElementById('countdown-text');
-            const videoContainer = document.getElementById('puzzle-video-container');
-            const video = document.getElementById('puzzle-video');
             
+            // Reset state
             overlay.style.display = 'flex';
-            message.style.display = 'none';
-            countdownText.style.display = 'none';
-            board.classList.remove('solved');
-            videoContainer.style.display = 'none'; 
-            video.pause(); 
-            video.currentTime = 0;
-            clearInterval(countdownInterval); 
-            clearTimeout(videoTimeout);
+            clearTimeout(imageTimeout);
             
             history.pushState({ puzzle: 'open' }, '');
             document.getElementById('bg-video').pause();
 
-            const pieces = board.querySelectorAll('.puzzle-piece');
-            pieces.forEach(p => p.remove());
+            // Clear only puzzle pieces
+            board.innerHTML = '';
 
+            // Initialize Solved State
             puzzleState = [1, 2, 3, 4, 5, 6, 7, 8, 0]; 
             emptyIndex = 8;
 
+            // Shuffle the board (100 valid random moves)
             for (let i = 0; i < 100; i++) {
                 const validMoves = getValidMoves(emptyIndex);
                 const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
@@ -576,10 +551,7 @@
 
         function renderBoard() {
             const board = document.getElementById('puzzle-board');
-            const videoContainer = document.getElementById('puzzle-video-container');
-
-            const pieces = board.querySelectorAll('.puzzle-piece');
-            pieces.forEach(p => p.remove());
+            board.innerHTML = '';
 
             puzzleState.forEach((num, index) => {
                 const piece = document.createElement('div');
@@ -594,7 +566,7 @@
                 }
                 
                 piece.onclick = () => movePiece(index);
-                board.insertBefore(piece, videoContainer); 
+                board.appendChild(piece); 
             });
         }
 
@@ -623,48 +595,26 @@
             }
 
             if (isSolved) {
-                const board = document.getElementById('puzzle-board');
-                const message = document.getElementById('puzzle-message');
-                const countdownText = document.getElementById('countdown-text');
-                const videoContainer = document.getElementById('puzzle-video-container');
-                const video = document.getElementById('puzzle-video');
+                const puzzleOverlay = document.getElementById('puzzle-overlay');
+                const devImageOverlay = document.getElementById('dev-image-overlay');
                 
-                setTimeout(() => {
-                    board.classList.add('solved'); 
-                    videoContainer.style.display = 'block'; 
-                    video.play(); 
-                    
-                    message.style.display = 'block';
-
-                    videoTimeout = setTimeout(() => {
-                        video.pause(); 
-                    }, 6000); 
-
-                    countdownText.style.display = 'block';
-                    let timeLeft = 6;
-                    countdownText.innerText = `Returning to main page in ${timeLeft}...`;
-
-                    countdownInterval = setInterval(() => {
-                        timeLeft--;
-                        if (timeLeft > 0) {
-                            countdownText.innerText = `Returning to main page in ${timeLeft}...`;
-                        } else {
-                            countdownText.innerText = `Returning to main page...`;
-                            clearInterval(countdownInterval);
-                            closePuzzle();
-                        }
-                    }, 1000);
-                    
-                }, 1000); 
+                // 1. Puzzle close cheyyunnu
+                puzzleOverlay.style.display = 'none';
+                
+                // 2. Dev.png full screen kaanikkunnu
+                devImageOverlay.style.display = 'flex';
+                
+                // 3. 4 seconds kazhinj Dev.png close cheyyunnu
+                imageTimeout = setTimeout(() => {
+                    devImageOverlay.style.display = 'none';
+                }, 4000); // 4 Seconds
             }
         }
 
         function closePuzzle() {
             document.getElementById('puzzle-overlay').style.display = 'none';
-            clearInterval(countdownInterval); 
-            clearTimeout(videoTimeout);
-            const video = document.getElementById('puzzle-video');
-            video.pause(); 
+            document.getElementById('dev-image-overlay').style.display = 'none';
+            clearTimeout(imageTimeout); 
         }
 
 
@@ -699,11 +649,12 @@
         window.addEventListener('popstate', function(event) {
             const subOverlay = document.getElementById('subscribe-overlay');
             const puzOverlay = document.getElementById('puzzle-overlay');
+            const devOverlay = document.getElementById('dev-image-overlay');
             
             if (subOverlay.style.display === 'flex') {
                 closeOverlay();
             }
-            if (puzOverlay.style.display === 'flex') {
+            if (puzOverlay.style.display === 'flex' || devOverlay.style.display === 'flex') {
                 closePuzzle();
             }
         });
@@ -828,17 +779,13 @@
                     isVideoPlaying = true;
                 });
 
-                // UPDATED: 2 seconds delay before starting the auto-scroll
                 if (window.innerWidth <= 1200) {
                     setTimeout(() => {
-                        // Scroll down a specific amount of pixels 
                         window.scrollBy({ top: 250, behavior: 'smooth' }); 
-                        
                         setTimeout(() => {
-                            // Scroll back to top to show the festival banner
                             window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }, 1000); // 1 second delay before scrolling back up
-                    }, 2000); // 2 seconds initial delay
+                        }, 1000); 
+                    }, 2000); 
                 }
             });
 
