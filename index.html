@@ -87,7 +87,24 @@
 
         #puzzle-title {
             color: var(--primary-gold); font-family: 'Playfair Display', serif;
-            font-size: 1.5rem; margin-bottom: 20px; letter-spacing: 1px;
+            font-size: 1.8rem; margin-bottom: 8px; letter-spacing: 1px;
+        }
+
+        .puzzle-instruction {
+            color: #d1d5db;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        #puzzle-dev-credit {
+            color: var(--primary-gold);
+            font-size: 0.75rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            font-weight: 500;
         }
 
         /* 8-Piece Sliding Puzzle Board */
@@ -161,7 +178,6 @@
         .seasonal-banner i { font-size: 1.3rem; animation: pulse 1.5s infinite; }
         .seasonal-banner.diwali { background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100); border: 1px solid #ffcc80; text-shadow: 0 0 10px rgba(255, 204, 128, 0.8); }
         
-        /* NEW: New Year Specific Colors */
         .seasonal-banner.newyear { 
             background: linear-gradient(135deg, #0f172a, #1e3a8a, #0B1F3A); 
             border: 1px solid var(--primary-gold); 
@@ -342,7 +358,7 @@
         </a>
     </div>
 
-    <!-- Fullscreen Dev Image Overlay (Shows after puzzle is solved) -->
+    <!-- Fullscreen Dev Image Overlay -->
     <div id="dev-image-overlay">
         <img src="dev.png" alt="Developer" class="no-save">
     </div>
@@ -350,6 +366,9 @@
     <!-- Puzzle Game Overlay -->
     <div id="puzzle-overlay">
         <h2 id="puzzle-title">Solve the Puzzle!</h2>
+        <p class="puzzle-instruction">Slide the numbers 1 to 8 into the correct order.</p>
+        <p id="puzzle-dev-credit">Solve it to reveal the Developer!</p>
+        
         <div id="puzzle-board"></div>
     </div>
 
@@ -430,7 +449,6 @@
                             <i class="fab fa-youtube"></i> Watch Our Latest Video
                         </div>
                         
-                        <!-- This ID is targeted by Intersection Observer -->
                         <div class="video-iframe-container" id="video-observer-target">
                             <div id="youtube-player"></div>
                             
@@ -527,11 +545,9 @@
         // DISABLE RIGHT CLICK & DRAG (Except for YouTube Iframe)
         // ==========================================
         document.addEventListener('contextmenu', function(event) {
-            // If the right-click happens inside the video iframe container, allow it
             if (event.target.closest('.video-iframe-container')) {
                 return; 
             }
-            // Otherwise, block it
             event.preventDefault();
         });
 
@@ -851,12 +867,11 @@
             // NEW: Auto-Play YouTube Video on Scroll (Intersection Observer)
             // ==========================================
             const observerTarget = document.getElementById('video-observer-target');
-            let hasPlayedAuto = false; // Ensure it only plays once automatically
+            let hasPlayedAuto = false; 
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting && !hasPlayedAuto) {
-                        // Only if the thumbnail is still visible (not clicked manually)
                         if (document.getElementById('latest-thumbnail').style.display !== 'none') {
                             playYouTubeVideo(); 
                             hasPlayedAuto = true;
@@ -864,7 +879,7 @@
                     }
                 });
             }, {
-                threshold: 0.6 // Trigger when 60% of the video is visible on screen
+                threshold: 0.6 
             });
 
             if (observerTarget) {
