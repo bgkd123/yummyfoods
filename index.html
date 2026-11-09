@@ -35,6 +35,25 @@
             user-select: none; 
         }
 
+        /* --- Prevent dragging and saving media --- */
+        img, video {
+            pointer-events: auto; 
+            -webkit-user-drag: none; 
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        .no-save {
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
         /* --- Subscribe Video Overlay --- */
         #subscribe-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -44,6 +63,7 @@
         #subscribe-overlay video {
             width: 100%; max-width: 400px; max-height: 70vh; border-radius: 15px;
             box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
+            pointer-events: none;
         }
         #goto-youtube-btn {
             display: none; margin-top: 20px; background: linear-gradient(135deg, #d4af37, #C8A35C);
@@ -73,7 +93,7 @@
         /* 8-Piece Sliding Puzzle Board */
         #puzzle-board {
             width: 300px; height: 300px;
-            background-color: #5c3a21; /* Brown Background */
+            background-color: #5c3a21;
             border: 4px solid var(--primary-gold); border-radius: 10px;
             display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
             gap: 4px; padding: 4px; position: relative; overflow: hidden;
@@ -83,8 +103,8 @@
         /* Individual pieces (Numbers) */
         .puzzle-piece {
             width: 100%; height: 100%;
-            background-color: #8B5A2B; /* Lighter Brown for pieces */
-            color: white; /* White Numbers */
+            background-color: #8B5A2B; 
+            color: white; 
             font-size: 2rem; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; 
@@ -106,21 +126,15 @@
         }
         .puzzle-piece.empty span { display: none; }
 
-        /* Hide pieces when solved to show image */
-        #puzzle-board.solved .puzzle-piece {
-            opacity: 0;
-            pointer-events: none;
-        }
-
         /* =========================================
-           NEW: Fullscreen Dev Image Overlay 
+           Fullscreen Dev Image Overlay 
            ========================================= */
         #dev-image-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; /* Black background */
-            z-index: 10002; /* Highest z-index to be above everything */
-            display: none; /* Hidden by default */
+            background-color: #000;
+            z-index: 10002; 
+            display: none; 
             align-items: center;
             justify-content: center;
         }
@@ -128,7 +142,8 @@
         #dev-image-overlay img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Ensures the entire image is visible without cropping */
+            object-fit: contain; 
+            pointer-events: none; 
         }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -146,6 +161,14 @@
         .seasonal-banner i { font-size: 1.3rem; animation: pulse 1.5s infinite; }
         .seasonal-banner.diwali { background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100); border: 1px solid #ffcc80; text-shadow: 0 0 10px rgba(255, 204, 128, 0.8); }
         
+        /* NEW: New Year Specific Colors */
+        .seasonal-banner.newyear { 
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #0B1F3A); 
+            border: 1px solid var(--primary-gold); 
+            text-shadow: 0 0 10px rgba(200, 163, 92, 0.8); 
+            box-shadow: 0 8px 25px rgba(11, 31, 58, 0.6);
+        }
+
         .diya-decor { position: fixed; font-size: 1.5rem; opacity: 0.7; animation: floatDiya 4s infinite ease-in-out; z-index: -1; pointer-events: none; }
         @keyframes floatDiya { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -199,7 +222,7 @@
             position: relative; 
             cursor: pointer;
         }
-        .video-container video { width: 100%; height: 100%; object-fit: cover; }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
         .scroll-down { margin-top: 15px; display: flex; flex-direction: column; align-items: center; color: var(--primary-gold); font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; animation: bounce 2s infinite; }
         .scroll-down i { font-size: 1.2rem; margin-top: 5px; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
@@ -224,7 +247,7 @@
         .qr-section p.desc { font-size: 0.7rem; color: var(--text-gray); margin-bottom: 20px; max-width: 180px; line-height: 1.4; }
         .qr-box { background: white; padding: 15px; border-radius: 24px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transition: transform 0.3s ease; }
         .qr-box:hover { transform: scale(1.02); }
-        .qr-box img { width: 100%; height: 100%; border-radius: 12px; object-fit: contain; }
+        .qr-box img { width: 100%; height: 100%; border-radius: 12px; object-fit: contain; pointer-events: none; }
         .qr-section .scan-text { font-size: 0.75rem; letter-spacing: 3px; font-weight: 600; color: var(--primary-dark); }
 
         /* Card Right Side (Info) */
@@ -242,9 +265,11 @@
         .latest-video-section { margin-bottom: 25px; background: #fdfbf7; border: 1px solid #f0e6d2; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .latest-video-title { font-size: 0.85rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .latest-video-title i { color: #FF0000; font-size: 1.1rem; }
+        
+        /* Updated Video Container for YouTube */
         .video-iframe-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; }
-        .video-iframe-container iframe, .video-iframe-container .video-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .video-placeholder { display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: transform 0.3s ease; }
+        .video-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: transform 0.3s ease; }
         .video-placeholder:hover { transform: scale(1.02); }
         .play-btn-overlay { width: 50px; height: 50px; background: rgba(200, 163, 92, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; padding-left: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: background 0.3s ease; }
         .video-placeholder:hover .play-btn-overlay { background: #FF0000; }
@@ -309,7 +334,7 @@
 
     <!-- Subscribe Video Overlay -->
     <div id="subscribe-overlay">
-        <video id="subscribe-video" playsinline>
+        <video id="subscribe-video" playsinline class="no-save">
             <source src="subscribe.webm" type="video/webm">
         </video>
         <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" onclick="closeOverlay()">
@@ -319,14 +344,13 @@
 
     <!-- Fullscreen Dev Image Overlay (Shows after puzzle is solved) -->
     <div id="dev-image-overlay">
-        <img src="dev.png" alt="Developer">
+        <img src="dev.png" alt="Developer" class="no-save">
     </div>
 
     <!-- Puzzle Game Overlay -->
     <div id="puzzle-overlay">
         <h2 id="puzzle-title">Solve the Puzzle!</h2>
         <div id="puzzle-board"></div>
-        <!-- No message/countdown text here anymore, as the whole overlay closes -->
     </div>
 
     <!-- Background Animation -->
@@ -337,7 +361,7 @@
     <!-- Dynamic Seasonal Greeting Banner -->
     <div id="festival-banner" class="seasonal-banner">
         <i class="fas fa-star"></i>
-        <span id="festival-text">Happy Diwali!</span>
+        <span id="festival-text">Happy Festival!</span>
         <i class="fas fa-star"></i>
     </div>
 
@@ -360,7 +384,7 @@
             <!-- Wrapped Video Container in a link to YouTube -->
             <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="video-link-wrapper">
                 <div class="video-container" id="video-container">
-                    <video id="bg-video" loop muted playsinline preload="auto">
+                    <video id="bg-video" loop muted playsinline preload="auto" class="no-save">
                         <source src="Start.webm" type="video/webm">
                     </video>
                 </div>
@@ -380,7 +404,7 @@
                 <h3>SCAN WITH GOOGLE LENS</h3>
                 <p class="desc">Point your camera here to instantly subscribe to our channel.</p>
                 <div class="qr-box">
-                    <img src="qr.png?v=2" alt="QR Code">
+                    <img src="qr.png?v=2" alt="QR Code" class="no-save">
                 </div>
                 <p class="scan-text">SCAN & SUBSCRIBE</p>
             </div>
@@ -400,17 +424,17 @@
                         Welcome to our channel! We are on a mission to explore the authentic, mouth-watering dishes and the best restaurants hidden across God's Own Country. From street food to fine dining, we bring you honest reviews and beautiful travel stories. Join us and satisfy your wanderlust and cravings!
                     </p>
 
-                    <!-- Latest Video Highlight Section -->
+                    <!-- Latest Video Highlight Section (With Intersection Observer for Auto-play) -->
                     <div class="latest-video-section">
                         <div class="latest-video-title">
                             <i class="fab fa-youtube"></i> Watch Our Latest Video
                         </div>
                         
-                        <div class="video-iframe-container" id="video-player-container">
+                        <!-- This ID is targeted by Intersection Observer -->
+                        <div class="video-iframe-container" id="video-observer-target">
                             <div id="youtube-player"></div>
                             
-                            <div class="video-placeholder" id="latest-thumbnail"
-                                 onclick="playYouTubeVideo()">
+                            <div class="video-placeholder" id="latest-thumbnail" onclick="playYouTubeVideo()">
                                 <div class="play-btn-overlay">
                                     <i class="fas fa-play"></i>
                                 </div>
@@ -500,6 +524,26 @@
         let isYouTubePlaying = false;
 
         // ==========================================
+        // DISABLE RIGHT CLICK & DRAG (Except for YouTube Iframe)
+        // ==========================================
+        document.addEventListener('contextmenu', function(event) {
+            // If the right-click happens inside the video iframe container, allow it
+            if (event.target.closest('.video-iframe-container')) {
+                return; 
+            }
+            // Otherwise, block it
+            event.preventDefault();
+        });
+
+        document.addEventListener('dragstart', function(event) {
+            if (event.target.nodeName === 'IMG' || event.target.nodeName === 'VIDEO') {
+                event.preventDefault();
+            }
+        });
+        // ==========================================
+
+
+        // ==========================================
         // PUZZLE GAME LOGIC (8-Piece Sliding)
         // ==========================================
         let puzzleState = []; 
@@ -510,21 +554,17 @@
             const overlay = document.getElementById('puzzle-overlay');
             const board = document.getElementById('puzzle-board');
             
-            // Reset state
             overlay.style.display = 'flex';
             clearTimeout(imageTimeout);
             
             history.pushState({ puzzle: 'open' }, '');
             document.getElementById('bg-video').pause();
 
-            // Clear only puzzle pieces
             board.innerHTML = '';
 
-            // Initialize Solved State
             puzzleState = [1, 2, 3, 4, 5, 6, 7, 8, 0]; 
             emptyIndex = 8;
 
-            // Shuffle the board (100 valid random moves)
             for (let i = 0; i < 100; i++) {
                 const validMoves = getValidMoves(emptyIndex);
                 const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
@@ -598,16 +638,12 @@
                 const puzzleOverlay = document.getElementById('puzzle-overlay');
                 const devImageOverlay = document.getElementById('dev-image-overlay');
                 
-                // 1. Puzzle close cheyyunnu
                 puzzleOverlay.style.display = 'none';
-                
-                // 2. Dev.png full screen kaanikkunnu
                 devImageOverlay.style.display = 'flex';
                 
-                // 3. 4 seconds kazhinj Dev.png close cheyyunnu
                 imageTimeout = setTimeout(() => {
                     devImageOverlay.style.display = 'none';
-                }, 4000); // 4 Seconds
+                }, 4000); 
             }
         }
 
@@ -645,7 +681,6 @@
             video.pause();
         }
 
-        // Handle Phone Back Button for BOTH overlays
         window.addEventListener('popstate', function(event) {
             const subOverlay = document.getElementById('subscribe-overlay');
             const puzOverlay = document.getElementById('puzzle-overlay');
@@ -669,8 +704,14 @@
             const banner = document.getElementById('festival-banner');
             const text = document.getElementById('festival-text');
 
+            // --- NEW YEAR (Jan 1st) ---
+            if (month === 1 && day === 1) {
+                banner.style.display = 'flex';
+                banner.classList.add('newyear');
+                text.innerHTML = "🎉 Happy New Year! 🎉<br><span style='font-size:0.75rem; font-weight:normal;'>Wishing you a prosperous and delicious year ahead!</span>";
+            }
             // --- DIWALI (Nov 8th) ---
-            if (month === 11 && day === 8) {
+            else if (month === 11 && day === 8) {
                 banner.style.display = 'flex';
                 banner.classList.add('diwali');
                 text.innerHTML = "✨ Happy Diwali! ✨<br><span style='font-size:0.75rem; font-weight:normal;'>Wishing you a festival of lights and joy!</span>";
@@ -697,7 +738,7 @@
         }
 
         // ==========================================
-        // MAIN LOGIC
+        // MAIN LOGIC (YouTube API & Auto-Play on Scroll)
         // ==========================================
         function extractVideoID(url) {
             url = url.trim(); 
@@ -733,6 +774,7 @@
         function onPlayerStateChange(event) {
             const bgVideo = document.getElementById('bg-video');
             
+            // If YouTube video plays, pause the background video (Only on Desktop)
             if (window.innerWidth > 1200) {
                 if (event.data == YT.PlayerState.PLAYING) {
                     bgVideo.pause();
@@ -804,6 +846,30 @@
                     bgVideo.volume = newVolume;
                 }
             });
+
+            // ==========================================
+            // NEW: Auto-Play YouTube Video on Scroll (Intersection Observer)
+            // ==========================================
+            const observerTarget = document.getElementById('video-observer-target');
+            let hasPlayedAuto = false; // Ensure it only plays once automatically
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !hasPlayedAuto) {
+                        // Only if the thumbnail is still visible (not clicked manually)
+                        if (document.getElementById('latest-thumbnail').style.display !== 'none') {
+                            playYouTubeVideo(); 
+                            hasPlayedAuto = true;
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.6 // Trigger when 60% of the video is visible on screen
+            });
+
+            if (observerTarget) {
+                observer.observe(observerTarget);
+            }
         });
     </script>
 </body>
