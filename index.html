@@ -114,7 +114,7 @@
         #subscribe-overlay video {
             width: 100%; max-width: 400px; max-height: 70vh; border-radius: 15px;
             box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
-            cursor: pointer; /* 👈 click/touch സൂചന */
+            cursor: pointer;
         }
         #goto-youtube-btn {
             display: none; margin-top: 20px; background: linear-gradient(135deg, #d4af37, #C8A35C);
@@ -794,6 +794,7 @@
             const video = document.getElementById('subscribe-video');
             overlay.style.display = 'none';
             video.pause();
+            video.currentTime = 0;
         }
 
         window.addEventListener('popstate', function(event) {
@@ -919,21 +920,40 @@
 
             // ==========================================
             // 👇 Subscribe വീഡിയോയിൽ touch/click ചെയ്യുമ്പോൾ
-            //    YouTube-ലേക്ക് പോകാൻ ഉള്ള കോഡ് 👇
+            //    overlay close ചെയ്ത് same tab-ൽ YouTube-ലേക്ക് പോകാൻ 👇
             // ==========================================
             const subscribeVideo = document.getElementById('subscribe-video');
             const youtubeChannelURL = 'https://youtube.com/@yummyfoodsfromkerala-oz2vj';
 
-            function openYouTubeChannel(e) {
+            function goToYouTubeChannel(e) {
                 if (e) e.preventDefault();
-                window.open(youtubeChannelURL, '_blank');
+
+                // 1. വീഡിയോ stop ചെയ്യുക
+                subscribeVideo.pause();
+                subscribeVideo.currentTime = 0;
+
+                // 2. Overlay close ചെയ്യുക (window close)
+                closeOverlay();
+
+                // 3. Background video pause ചെയ്യുക
+                if (bgVideo) bgVideo.pause();
+
+                // 4. History-യിൽ overlay entry മാറ്റുക (back button അമർത്തുമ്പോൾ
+                //    overlay വീണ്ടും വരാതിരിക്കാൻ)
+                history.replaceState(null, '', window.location.href);
+
+                // 5. Same tab-ൽ YouTube ചാനലിലേക്ക് പോകുക
+                window.location.href = youtubeChannelURL;
             }
 
             // Click (Desktop + Mobile)
-            subscribeVideo.addEventListener('click', openYouTubeChannel);
-            
+            subscribeVideo.addEventListener('click', goToYouTubeChannel);
+
             // Touch (Mobile-ൽ വേഗത്തിൽ പ്രവർത്തിക്കാൻ)
-            subscribeVideo.addEventListener('touchend', openYouTubeChannel);
+            subscribeVideo.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                goToYouTubeChannel(e);
+            });
             // ==========================================
 
             const MAX_SCROLL_DISTANCE = 500; 
