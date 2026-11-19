@@ -114,7 +114,7 @@
         #subscribe-overlay video {
             width: 100%; max-width: 400px; max-height: 70vh; border-radius: 15px;
             box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
-            pointer-events: none;
+            cursor: pointer; /* 👈 click/touch സൂചന */
         }
         #goto-youtube-btn {
             display: none; margin-top: 20px; background: linear-gradient(135deg, #d4af37, #C8A35C);
@@ -916,6 +916,25 @@
             const bgVideo = document.getElementById('bg-video'); 
             const mainCard = document.getElementById('main-card');
             const videoWrapper = document.getElementById('video-wrapper');
+
+            // ==========================================
+            // 👇 Subscribe വീഡിയോയിൽ touch/click ചെയ്യുമ്പോൾ
+            //    YouTube-ലേക്ക് പോകാൻ ഉള്ള കോഡ് 👇
+            // ==========================================
+            const subscribeVideo = document.getElementById('subscribe-video');
+            const youtubeChannelURL = 'https://youtube.com/@yummyfoodsfromkerala-oz2vj';
+
+            function openYouTubeChannel(e) {
+                if (e) e.preventDefault();
+                window.open(youtubeChannelURL, '_blank');
+            }
+
+            // Click (Desktop + Mobile)
+            subscribeVideo.addEventListener('click', openYouTubeChannel);
+            
+            // Touch (Mobile-ൽ വേഗത്തിൽ പ്രവർത്തിക്കാൻ)
+            subscribeVideo.addEventListener('touchend', openYouTubeChannel);
+            // ==========================================
 
             const MAX_SCROLL_DISTANCE = 500; 
             let isVideoPlaying = false;
